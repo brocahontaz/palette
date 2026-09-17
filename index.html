@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta
+      name="description"
+      content="Extract, inspect and reuse colors — nothing leaves your browser."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230b0f14'/%3E%3Crect x='2.5' y='3' width='4.5' height='10' rx='1' fill='%234cc2ff'/%3E%3Crect x='8.5' y='3' width='5' height='4.5' rx='1' fill='%23e3b341'/%3E%3Crect x='8.5' y='8.5' width='5' height='4.5' rx='1' fill='%23f85149'/%3E%3C/svg%3E"
+    />
+    <title>Palette — local color extractor and contrast checker</title>
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <h1>Palette</h1>
+        <p class="tagline">Extract, inspect and reuse colors — nothing leaves your browser.</p>
+      </div>
+    </header>
+    <noscript>
+      <p class="noscript">This tool runs entirely in your browser and needs JavaScript to work.</p>
+    </noscript>
+    <main class="layout">
+      <section class="card image-card" aria-labelledby="image-heading">
+        <h2 id="image-heading">Image</h2>
+        <button type="button" id="drop-zone" class="drop-zone" aria-describedby="image-status">
+          <span id="drop-hint" class="drop-hint">
+            Click or drop an image here to extract its palette.<br />
+            <span class="drop-types">PNG, JPEG, WebP or GIF, up to 20 MB</span>
+          </span>
+          <span id="drop-preview" class="drop-preview" hidden>
+            <img id="thumb" alt="Selected image preview" />
+            <span id="thumb-meta" class="thumb-meta mono"></span>
+          </span>
+        </button>
+        <input
+          id="file-input"
+          type="file"
+          accept="image/png,image/jpeg,image/webp,image/gif"
+          class="visually-hidden"
+          tabindex="-1"
+          aria-hidden="true"
+        />
+        <p id="image-status" class="status" role="status" aria-live="polite"></p>
+        <div class="image-actions">
+          <button type="button" id="clear-image" hidden>Clear image</button>
+        </div>
+        <p class="note">Images are processed locally in your browser and never uploaded.</p>
+      </section>
+
+      <section class="card manual-card" aria-labelledby="manual-heading">
+        <h2 id="manual-heading">Add a color</h2>
+        <label class="input-label" for="manual-color">Pick a color</label>
+        <div class="manual-row">
+          <input id="manual-color" type="color" value="#4cc2ff" />
+          <input
+            id="manual-hex"
+            type="text"
+            spellcheck="false"
+            autocomplete="off"
+            class="mono"
+            value="#4cc2ff"
+            aria-label="Hex color, e.g. #1a2b3c"
+            aria-describedby="manual-error"
+          />
+          <button type="button" id="add-color">Add color</button>
+        </div>
+        <p id="manual-error" class="error" role="alert" hidden></p>
+      </section>
+
+      <section class="card palette-card" aria-labelledby="palette-heading">
+        <div class="palette-head">
+          <h2 id="palette-heading">Palette</h2>
+          <button type="button" id="clear-palette">Clear all</button>
+        </div>
+        <p id="palette-status" class="status" role="status" aria-live="polite"></p>
+        <ul id="palette-list" class="palette-list"></ul>
+        <p id="palette-empty" class="note">
+          No colors yet — extract them from an image or add one manually.
+        </p>
+      </section>
+
+      <section class="card contrast-card" aria-labelledby="contrast-heading">
+        <h2 id="contrast-heading">Contrast</h2>
+        <div class="contrast-pickers">
+          <div class="picker">
+            <label class="input-label" for="fg-color">Text (foreground)</label>
+            <div class="picker-row">
+              <input id="fg-color" type="color" value="#ffffff" />
+              <input
+                id="fg-hex"
+                type="text"
+                spellcheck="false"
+                autocomplete="off"
+                class="mono"
+                value="#ffffff"
+                aria-describedby="fg-error"
+              />
+            </div>
+            <p id="fg-error" class="error" role="alert" hidden></p>
+          </div>
+          <div class="picker">
+            <label class="input-label" for="bg-color">Background</label>
+            <div class="picker-row">
+              <input id="bg-color" type="color" value="#0b0f14" />
+              <input
+                id="bg-hex"
+                type="text"
+                spellcheck="false"
+                autocomplete="off"
+                class="mono"
+                value="#0b0f14"
+                aria-describedby="bg-error"
+              />
+            </div>
+            <p id="bg-error" class="error" role="alert" hidden></p>
+          </div>
+        </div>
+        <p class="ratio-label">Contrast ratio</p>
+        <p id="contrast-ratio" class="contrast-ratio mono">—</p>
+        <ul id="wcag-badges" class="wcag-badges"></ul>
+        <div class="samples">
+          <p class="input-label">Preview</p>
+          <p id="sample-normal" class="sample">The quick brown fox jumps over the lazy dog.</p>
+          <p id="sample-large" class="sample sample-large">
+            The quick brown fox jumps over the lazy dog.
+          </p>
+        </div>
+      </section>
+
+      <section class="card export-card" aria-labelledby="export-heading">
+        <h2 id="export-heading">Export</h2>
+        <label class="input-label" for="css-output">CSS variables</label>
+        <textarea id="css-output" rows="6" readonly spellcheck="false"></textarea>
+        <label class="input-label" for="json-output">JSON</label>
+        <textarea id="json-output" rows="6" readonly spellcheck="false"></textarea>
+        <div class="export-actions">
+          <button type="button" id="copy-css">Copy CSS</button>
+          <button type="button" id="copy-json">Copy JSON</button>
+        </div>
+      </section>
+    </main>
+    <footer class="app-footer">
+      <p>Palette runs entirely in your browser — images and colors never leave your device.</p>
+    </footer>
+    <span id="copy-status" class="visually-hidden" role="status" aria-live="polite"></span>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
